@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: srcmkr-deployment
+  labels:
+    app: srcmkr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: srcmkr
+  template:
+    metadata:
+      labels:
+        app: srcmkr
+    spec:
+      containers:
+      - name: srcmkr
+        image: srcmkr/linkshortener:latest
+        envFrom:
+        - secretRef:
+            name: srcmkr-secret
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: srcmkr
+  name: srcmkr-service
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: https
+    port: 443
+    protocol: TCP
+    targetPort: 443
+  selector:
+    app: srcmkr
+
